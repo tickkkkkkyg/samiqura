@@ -98,6 +98,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samiqura.browser.ui.theme.getUiSizeConfig
+import com.samiqura.browser.ui.theme.DEFAULT_ACCENT
+import com.samiqura.browser.ThemeStateHolder
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.viewinterop.AndroidView
 
@@ -1547,6 +1549,17 @@ fun BrowserScreen(
                                     color = MaterialTheme.colorScheme.primary,
                                     trackColor = Color.Transparent,
                                     strokeCap = androidx.compose.ui.graphics.StrokeCap.Square
+                                )
+                            }
+                            // Arc theme: a single pill acts as both the address
+                            // bar and the launcher, so the conventional bordered
+                            // field is hidden while browsing. Tapping the pill
+                            // reveals the real input below it.
+                            if (ThemeStateHolder.accentTheme == DEFAULT_ACCENT && !isInputFocused) {
+                                ArcCommandBarCollapsed(
+                                    currentUrl = viewModel.activeTab?.url.orEmpty(),
+                                    onClick = { isInputFocused = true },
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                                 )
                             }
                             PhoneAddressBar(

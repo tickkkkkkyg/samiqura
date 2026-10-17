@@ -70,7 +70,14 @@ val RoyalPurpleLight = AccentPalette(Color(0xFF6750A4), Color(0xFF4F378B), Color
 val MonochromeDark = AccentPalette(Color(0xFFC7C7C7), Color(0xFFAAAAAA), Color(0xFF303030), DarkError)
 val MonochromeLight = AccentPalette(Color(0xFF5E5E5E), Color(0xFF474747), Color(0xFF1F1F1F), LightError)
 
+// Arc carries a full ground palette rather than just a primary recolour, so it
+// needs a real entry here to stay selectable, plus a special case in
+// getColorScheme that routes it to arcDarkScheme/arcLightScheme.
+val ArcAccentPalette = AccentPalette(ArcAccent, ArcAccent, ArcAccentQuiet, DarkError)
+val ArcAccentPaletteLight = AccentPalette(ArcAccentQuiet, ArcAccentQuiet, ArcAccent, LightError)
+
 val AccentThemesDark = mapOf(
+    "Arc" to ArcAccentPalette,
     "Ocean Blue" to OceanBlueDark,
     "Crimson Red" to CrimsonRedDark,
     "Emerald Green" to EmeraldGreenDark,
@@ -80,6 +87,7 @@ val AccentThemesDark = mapOf(
 )
 
 val AccentThemesLight = mapOf(
+    "Arc" to ArcAccentPaletteLight,
     "Ocean Blue" to OceanBlueLight,
     "Crimson Red" to CrimsonRedLight,
     "Emerald Green" to EmeraldGreenLight,
@@ -87,6 +95,9 @@ val AccentThemesLight = mapOf(
     "Royal Purple" to RoyalPurpleLight,
     "Monochrome" to MonochromeLight
 )
+
+// Default accent on first launch.
+const val DEFAULT_ACCENT = "Arc"
 
 fun buildDarkScheme(accent: AccentPalette): ColorScheme = darkColorScheme(
     background = DarkBg,
@@ -176,6 +187,22 @@ fun getColorScheme(
             )
         } else {
             dynamicScheme
+        }
+    }
+
+    // Arc replaces the whole ground, not just the primary, so it bypasses the
+    // AccentPalette path entirely and uses the token-built schemes.
+    if (accentTheme == DEFAULT_ACCENT) {
+        return when {
+            isDark && isAmoled -> arcDarkScheme().copy(
+                background = AmoledBg,
+                surface = AmoledSurface,
+                surfaceVariant = AmoledSurfaceVar,
+                outline = AmoledBorder,
+                outlineVariant = AmoledBorder.copy(alpha = 0.5f)
+            )
+            isDark -> arcDarkScheme()
+            else -> arcLightScheme()
         }
     }
 

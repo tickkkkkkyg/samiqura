@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import com.samiqura.browser.ui.theme.DEFAULT_ACCENT
 
 class OmniApplication : Application(), coil.ImageLoaderFactory {
 
@@ -175,7 +176,7 @@ class OmniApplication : Application(), coil.ImageLoaderFactory {
         // valid theme — no main-thread stall, no white flash.
         ThemeStateHolder.darkThemeEnabled = true
         ThemeStateHolder.amoledMode = false
-        ThemeStateHolder.accentTheme = "Ocean Blue"
+        ThemeStateHolder.accentTheme = DEFAULT_ACCENT
         ThemeStateHolder.dynamicColorEnabled = false
 
         // Pre-load UI scale and wallpaper preferences synchronously so the very
@@ -212,7 +213,7 @@ class OmniApplication : Application(), coil.ImageLoaderFactory {
                 val prefs = readStartupPrefs()
                 ThemeStateHolder.darkThemeEnabled  = prefs[DARK_THEME_ENABLED_KEY] ?: true
                 ThemeStateHolder.amoledMode        = prefs[AMOLED_MODE_KEY]        ?: false
-                ThemeStateHolder.accentTheme       = prefs[ACCENT_THEME_KEY]       ?: "Ocean Blue"
+                ThemeStateHolder.accentTheme       = prefs[ACCENT_THEME_KEY]       ?: DEFAULT_ACCENT
                 ThemeStateHolder.dynamicColorEnabled = prefs[DYNAMIC_COLOR_KEY]    ?: false
                 ThemeStateHolder.followSystemTheme = prefs[FOLLOW_SYSTEM_THEME_KEY] ?: false
             } catch (_: Exception) {
@@ -268,7 +269,7 @@ class OmniApplication : Application(), coil.ImageLoaderFactory {
 object ThemeStateHolder {
     @Volatile var darkThemeEnabled: Boolean = true
     @Volatile var amoledMode: Boolean = false
-    @Volatile var accentTheme: String = "Ocean Blue"
+    @Volatile var accentTheme: String = DEFAULT_ACCENT
     @Volatile var dynamicColorEnabled: Boolean = false
     @Volatile var followSystemTheme: Boolean = false
 }

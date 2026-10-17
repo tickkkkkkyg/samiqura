@@ -36,7 +36,7 @@ import androidx.activity.enableEdgeToEdge
 @Composable
 fun OmniTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    accentTheme: String = "Ocean Blue",
+    accentTheme: String = DEFAULT_ACCENT,
     /** true → use pure-black AMOLED surfaces (only applies when darkTheme = true) */
     amoledMode: Boolean = false,
     creamyMode: Boolean = false,
@@ -80,7 +80,9 @@ fun OmniTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = OmniTypography,
-        shapes = OmniShapes,
+        // The Arc accent already replaces the palette wholesale, so pair it
+        // with the larger radii that make the interface read as pill-shaped.
+        shapes = if (accentTheme == DEFAULT_ACCENT) ArcShapes else OmniShapes,
         content = content
     )
 }

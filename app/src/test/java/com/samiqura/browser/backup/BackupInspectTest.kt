@@ -19,7 +19,7 @@ class BackupInspectTest {
     fun `detects all v2 sections with counts`() {
         val json = """
             {
-              "app": "OmniBrowser",
+              "app": "Samiqura",
               "schema_version": 2,
               "sections": ["settings","bookmarks","history","tabs"],
               "settings": {
@@ -48,7 +48,7 @@ class BackupInspectTest {
     fun `detects speed dial section`() {
         val json = """
             {
-              "app": "OmniBrowser",
+              "app": "Samiqura",
               "schema_version": 2,
               "sections": ["speed_dial"],
               "speed_dial": [
@@ -68,7 +68,7 @@ class BackupInspectTest {
     fun `detects legacy v1 settings-only file`() {
         val json = """
             {
-              "app": "OmniBrowser",
+              "app": "Samiqura",
               "schema_version": 1,
               "datastore": {"omni_settings": [{"key":"dark_theme_enabled","type":"bool","value":false}]},
               "shared_prefs": {"omni_prefs": {"selected_language": {"type":"string","value":"en"}}}

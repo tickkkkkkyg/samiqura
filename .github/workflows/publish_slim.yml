@@ -1,0 +1,127 @@
+name: 📤 Publish Slim APK
+
+# Publishes the minified, debug-key-signed build as a GitHub release asset.
+#
+# This exists because GitHub requires a login to download a CI *artifact*, which
+# makes the APK awkward to fetch on a phone. A release asset downloads directly
+# with no account and no unzipping step, so this is the install path meant for
+# personal use.
+#
+# It publishes to a rolling tag rather than a version tag: every successful run
+# replaces the assets on the same release, so there is always exactly one
+# current download and it never goes stale. Signed distribution is a separate
+# concern, handled by release.yml, which needs the project keystore.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'app/**'
+      - 'app/build.gradle.kts'
+      - 'app/proguard-rules.pro'
+      - '.github/workflows/publish_slim.yml'
+
+# One publish at a time. A new push supersedes an in-flight run rather than
+# racing it to overwrite the same release.
+concurrency:
+  group: publish-slim
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: Publish Slim APK
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '17'
+          cache: gradle
+
+      - name: Grant Gradle execute permission
+        run: chmod +x gradlew
+
+      - name: Build Slim APK (ARM64)
+        run: ./gradlew assembleAarch64Slim --no-daemon
+
+      - name: Build Slim APK (ARM32)
+        run: ./gradlew assembleArmSlim --no-daemon
+
+      # Give each APK a name that says which phones it is for. Deciding this at
+      # upload time is clearer than making the user inspect the filename.
+      - name: Rename APKs for the download
+        run: |
+          set -euo pipefail
+          for abi in aarch64 arm; do
+            apk=$(find app/build/outputs/apk -path "*${abi}Slim*" -name '*.apk' | head -1)
+            [ -n "$apk" ] || { echo "no APK found for $abi"; exit 1; }
+            case "$abi" in
+              aarch64) label="arm64" ;;
+              arm)     label="arm32" ;;
+            esac
+            cp "$apk" "Samiqura-${label}-slim.apk"
+            echo "prepared Samiqura-${label}-slim.apk ($(du -h "Samiqura-${label}-slim.apk" | cut -f1))"
+          done
+
+      # The rolling tag is fixed, so each run deletes the previous assets before
+      # uploading. Without this the release accumulates one APK per CPU type per
+      # run and the download page becomes ambiguous.
+      - name: Publish to the rolling release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="samiqura-slim"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release delete "$TAG" --yes --cleanup-tag
+          fi
+
+          NOTES=$(cat <<'EOF'
+          ### Samiqura — slim build
+
+          Minified and resource-shrunk, signed with the standard debug key so it
+          installs without a private keystore. This is the same engine as the
+          full build; only the packaging differs.
+
+          **Which file do I download?**
+
+          | File | Your phone |
+          | --- | --- |
+          | `Samiqura-arm64-slim.apk` | Almost all phones made from about 2018 onward. Try this first. |
+          | `Samiqura-arm32-slim.apk` | Older or budget 32-bit phones. |
+
+          To check: Settings → About phone → Android version. Android 8.0 and
+          newer on a 64-bit chip means arm64.
+
+          **To install:** download the APK, allow installs from your browser in
+          Settings → Apps → Special access → Install unknown apps, then tap the
+          file.
+
+          Derived from Omni Browser by RebelRoot, under GPL-3.0. See NOTICE.md.
+          EOF
+          )
+
+          gh release create "$TAG" \
+            --title "Samiqura (slim)" \
+            --notes "$NOTES" \
+            Samiqura-arm64-slim.apk \
+            Samiqura-arm32-slim.apk
+
+          echo "published: $(gh release view "$TAG" --json url -q .url)"
+
+      - name: Summary
+        run: |
+          echo "### Slim APK published" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "[Download from the Releases page](${{ steps.publish.outputs.url }})" >> "$GITHUB_STEP_SUMMARY" || true
+          echo "Release URL: $(gh release view samiqura-slim --json url -q .url 2>/dev/null || echo n/a)" >> "$GITHUB_STEP_SUMMARY"

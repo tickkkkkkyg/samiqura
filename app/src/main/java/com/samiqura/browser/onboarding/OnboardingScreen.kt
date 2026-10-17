@@ -51,6 +51,7 @@ import com.samiqura.browser.browser.BrowserViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
+import androidx.compose.ui.draw.shadow
 
 // ── Minimal Matte Design Tokens ─────────────────────────────────────────────
 // Clean, simple matte surfaces with subtle neutral slate tones — no gloss, no vibrant cyan/purple.
@@ -313,6 +314,19 @@ fun OnboardingScreen(
                 )
             }
         }
+
+        // Standing credit for Puskr Cooperation, visible on the final page so it
+        // is the last thing read before the browser opens.
+        if (isLastPage) {
+            Spacer(Modifier.height(14.dp))
+            Text(
+                text = stringResource(R.string.onboarding_welcome_credit),
+                color = bodyColor.copy(alpha = 0.75f),
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
@@ -342,6 +356,22 @@ private fun PageContent(
         AnimatedNavbarShowcase(
             selectedPos = selectedNavbarPos,
             modifier = Modifier.height(280.dp).fillMaxWidth()
+        )
+    } else if (pageData.id == "welcome") {
+        // The welcome page shows the mark rather than a device mockup. The mark
+        // carries a thick light outline so it stays legible against every part
+        // of the mesh gradient behind it.
+        Image(
+            painter = painterResource(R.drawable.ic_samiqura_mark),
+            contentDescription = null,
+            modifier = Modifier
+                .size(132.dp)
+                .shadow(
+                    elevation = 18.dp,
+                    shape = RoundedCornerShape(36.dp),
+                    ambientColor = Color(0x40000000),
+                    spotColor = Color(0x40000000)
+                )
         )
     } else {
         val imageRes = if (pageData.id == "theme_setup") {
@@ -406,6 +436,19 @@ private fun PageContent(
                 }
             }
         }
+    }
+
+    // Welcome page carries a short description in place of a feature list, so
+    // the mark is not left sitting alone with nothing to say.
+    if (pageData.id == "welcome") {
+        Spacer(Modifier.height(14.dp))
+        Text(
+            text = stringResource(R.string.onboarding_welcome_body),
+            color = bodyColor,
+            fontSize = 14.sp,
+            textAlign = TextAlign.Center,
+            lineHeight = 21.sp
+        )
     }
 }
 
@@ -945,6 +988,17 @@ private fun TabCountBadge(
 private fun buildPages(context: Context): List<OnboardingPage> {
     val matteAccent = Color(0xFF475569)
     return listOf(
+        // First page. Carries the brand and the Puskr Cooperation credit, and
+        // uses no illustration: the welcome is the mark on the mesh, and a
+        // phone mockup here would compete with it.
+        OnboardingPage(
+            id = "welcome",
+            imageRes = 0,
+            title = context.getString(R.string.onboarding_welcome_title),
+            accentColor = matteAccent,
+            tagline = context.getString(R.string.onboarding_welcome_tagline),
+            features = emptyList()
+        ),
         OnboardingPage(
             id = "browse",
             imageRes = R.drawable.ob_secure_browser,

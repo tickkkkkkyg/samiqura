@@ -637,6 +637,10 @@
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_next">Next</string>
     <string name="onboarding_start_browsing">Start Browsing</string>
+    <string name="onboarding_welcome_title">Welcome to Samiqura</string>
+    <string name="onboarding_welcome_tagline">Built by Puskr Cooperation</string>
+    <string name="onboarding_welcome_body">A private browser that keeps your tabs organised, blocks what tracks you, and stays out of your way.</string>
+    <string name="onboarding_welcome_credit">Built by Puskr Cooperation</string>
     <string name="onboarding_title_browse">Browse Freely, Browse Privately</string>
     <string name="onboarding_tagline_browse">Zero Trackers · Fully On-Device · Hyper-Fast</string>
     <string name="onboarding_feature_smart_bar_title">Smart Address Bar</string>

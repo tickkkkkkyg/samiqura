@@ -162,8 +162,14 @@ android {
 
     packaging {
         jniLibs {
-            // Using `resource-noexec-tor` (JNI shared library) ensures full 16 KB page
-            // alignment compatibility on Android 15+ (API 35+) and avoids native load crashes.
+            // `useLegacyPackaging = true` sets extractNativeLibs, which lets the
+            // build deflate the .so entries instead of storing them raw. That is
+            // the size-friendly setting and is what keeps the GeckoView engine
+            // (~100 MB per ABI) from shipping uncompressed.
+            //
+            // Do not set this to false. extractNativeLibs = false requires .so
+            // entries to be stored uncompressed and 16 KB aligned so the loader
+            // can map them in place, which makes the APK substantially larger.
             useLegacyPackaging = true
             pickFirsts.addAll(listOf("**/libjsc.so", "**/libc++_shared.so"))
             excludes.addAll(listOf(

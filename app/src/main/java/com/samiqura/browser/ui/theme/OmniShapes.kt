@@ -27,3 +27,19 @@ val OmniShapes = Shapes(
     medium = RoundedCornerShape(24.dp),
     large = RoundedCornerShape(32.dp)
 )
+
+/**
+ * Arc-inspired shape scale.
+ *
+ * Larger than [OmniShapes] because the Arc language is pill-like: controls are
+ * fully rounded and cards are generously curved, which is what separates the
+ * intended look from a conventional Material surface. Values live in
+ * [ArcRadius] so components and the theme agree.
+ */
+val ArcShapes = Shapes(
+    extraSmall = RoundedCornerShape(ArcRadius.chip),
+    small = RoundedCornerShape(ArcRadius.panel),
+    medium = RoundedCornerShape(ArcRadius.card),
+    large = RoundedCornerShape(ArcRadius.card),
+    extraLarge = RoundedCornerShape(ArcRadius.sheet),
+)

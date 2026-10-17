@@ -2039,14 +2039,14 @@ class BrowserViewModel : ViewModel() {
     fun createNewTabInNewGroup(context: Context, url: String = "about:blank", isIncognito: Boolean = isIncognitoMode) {
         val newGroupId = UUID.randomUUID().toString()
         val groupColors = listOf(
-            0xFF4285F4L, // Google Blue
-            0xFF34A853L, // Google Green
-            0xFFEA4335L, // Google Red
-            0xFFFBBC05L, // Google Yellow
-            0xFF9C27B0L, // Purple
-            0xFFFF6D00L, // Orange
-            0xFF00BCD4L, // Cyan
-            0xFFE91E63L  // Pink
+            0xFF7C6BF5L, // violet
+            0xFF38BDF8L, // sky
+            0xFF34D399L, // emerald
+            0xFFFBBF24L, // amber
+            0xFFFB7185L, // rose
+            0xFFA78BFAL, // lilac
+            0xFF2DD4BFL, // teal
+            0xFFF97316L  // ember
         )
         val chosenColor = groupColors[tabGroups.size % groupColors.size]
         val groupNumber = tabGroups.size + 1

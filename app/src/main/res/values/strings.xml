@@ -637,6 +637,32 @@
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_next">Next</string>
     <string name="onboarding_start_browsing">Start Browsing</string>
+    <!-- About, attribution and privacy. Organisation spelling is "Puskr"
+         (no h) and "Puskr Budha", confirmed by the owner. -->
+    <string name="about_title">About Samiqura</string>
+    <string name="about_watermark">Built by Puskr Cooperation</string>
+    <string name="about_funded_by">Funded by Puskr Budha</string>
+    <string name="about_blurb">A private browser built on the Gecko engine, with ad and tracker blocking that works on the device and no account required.</string>
+    <string name="about_upstream_title">Open source</string>
+    <string name="about_upstream_body">Samiqura is built on Omni Browser by RebelRoot, used under the GNU General Public License v3. Samiqura is an independent distribution and is not affiliated with or endorsed by RebelRoot.</string>
+    <string name="about_version_label">Version</string>
+    <string name="about_license_label">Licence</string>
+    <string name="about_privacy_title">Privacy Policy</string>
+    <string name="privacy_summary_title">The short version</string>
+    <string name="privacy_summary_body">Samiqura does not collect, sell or transmit your browsing data. There is no account, no analytics and no crash reporting. Everything you browse stays on your device.</string>
+    <string name="privacy_what_stays_title">What stays on your device</string>
+    <string name="privacy_what_stays_body">History, bookmarks, tabs, passwords, settings and downloads are stored locally on your device. Clearing your browser data or uninstalling removes them.</string>
+    <string name="privacy_network_title">What leaves your device</string>
+    <string name="privacy_network_body">Only the websites you choose to visit. Samiqura has no server of its own: it contains no analytics, advertising or crash-reporting code, and nothing about you is sent to us. Your web traffic is visible to the sites you visit and to your network operator, as with any browser.</string>
+    <string name="privacy_permissions_title">Permissions, and why</string>
+    <string name="privacy_permissions_body">Samiqura asks only for permissions it needs to work: notifications for downloads and alerts, and optional storage access for saving files you choose to download.</string>
+    <string name="privacy_children_title">Children</string>
+    <string name="privacy_children_body">Samiqura does not knowingly collect personal information from anyone, including children, because it does not collect personal information at all.</string>
+    <string name="privacy_changes_title">Changes to this policy</string>
+    <string name="privacy_changes_body">If this policy changes, the updated version ships with the app update. The policy is part of the app, so it cannot be changed on a server without you knowing.</string>
+    <string name="privacy_contact_title">Contact</string>
+    <string name="privacy_contact_body">Questions about privacy can be raised in the Samiqura community on Discord.</string>
+    <string name="about_privacy_row_desc">What Samiqura collects, and what it does not</string>
     <string name="onboarding_welcome_title">Welcome to Samiqura</string>
     <string name="onboarding_welcome_tagline">Built by Puskr Cooperation</string>
     <string name="onboarding_welcome_body">A private browser that keeps your tabs organised, blocks what tracks you, and stays out of your way.</string>

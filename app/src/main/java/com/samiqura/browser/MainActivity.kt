@@ -553,6 +553,12 @@ class MainActivity : FragmentActivity() {
                                 onOpenPrivacyHub = {
                                     navController.navigate("privacy_hub")
                                 },
+                                onOpenAbout = {
+                                    navController.navigate("about_samiqura")
+                                },
+                                onOpenPrivacyPolicy = {
+                                    navController.navigate("privacy_policy")
+                                },
                                 onOpenTabs = {
                                     navController.navigate("settings_tabs")
                                 },
@@ -627,6 +633,40 @@ class MainActivity : FragmentActivity() {
                             )
                         }
 
+                        // About Samiqura — branding, attribution and the funding
+                        // credit. Version is read here so the screen stays a
+                        // pure presentational component.
+                        composable("about_samiqura") {
+                            val appVersion = remember(context) {
+                                try {
+                                    context.packageManager
+                                        .getPackageInfo(context.packageName, 0).versionName ?: "—"
+                                } catch (e: Exception) { "—" }
+                            }
+                            com.samiqura.browser.settings.AboutSamiquraScreen(
+                                appVersionName = appVersion,
+                                onNavigateBack = { navController.popBackStack() },
+                                onOpenUrl = { url ->
+                                    runCatching {
+                                        context.startActivity(
+                                            android.content.Intent(
+                                                android.content.Intent.ACTION_VIEW,
+                                                android.net.Uri.parse(url)
+                                            )
+                                        )
+                                    }
+                                }
+                            )
+                        }
+
+                        // Privacy Policy. Shipped inside the app rather than
+                        // hosted, so it can only change when the user updates.
+                        composable("privacy_policy") {
+                            com.samiqura.browser.settings.PrivacyPolicyScreen(
+                                onNavigateBack = { navController.popBackStack() }
+                            )
+                        }
+
                         // Download Settings Screen
                         composable("download_settings") {
                             com.samiqura.browser.settings.DownloadSettingsScreen(
@@ -636,13 +676,11 @@ class MainActivity : FragmentActivity() {
                             )
                         }
 
-                        // Omni Sync Showcase & Feature Screen
-                        composable("omni_sync_showcase") {
-                            com.samiqura.browser.settings.OmniSyncShowcaseScreen(
-                                viewModel = browserViewModel,
-                                onNavigateBack = { navController.popBackStack() }
-                            )
-                        }
+                        // Omni Sync removed. Nothing navigated to this route, so it
+                        // was already unreachable from the UI. The sync engine under
+                        // com.samiqura.browser.sync is left in place: deleting it is a
+                        // separate, larger change and is not needed to remove the
+                        // feature from the product.
 
                         // Offline AI Settings Screen (models, translation mode)
                         composable("offline_ai") {

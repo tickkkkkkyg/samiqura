@@ -62,6 +62,7 @@ import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import androidx.compose.material.icons.rounded.Info
 
 private data class SettingSearchResult(
     val title: String,
@@ -84,6 +85,8 @@ fun SettingsScreen(
     onOpenWallpapers: () -> Unit = {},
     onOpenPrivacySecurity: () -> Unit = {},
     onOpenPrivacyHub: () -> Unit = {},
+    onOpenAbout: () -> Unit = {},
+    onOpenPrivacyPolicy: () -> Unit = {},
     onOpenTabs: () -> Unit = {},
     onOpenAccessibility: () -> Unit = {},
     onOpenSiteSettings: () -> Unit = {},
@@ -1186,15 +1189,23 @@ fun SettingsScreen(
                         Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = null, tint = textSecondaryColor)
                     }
                     HorizontalDivider(color = dividerColor, modifier = Modifier.padding(horizontal = 16.dp))
+                    NavRow(Icons.Rounded.Info, stringResource(id = R.string.about_title), stringResource(id = R.string.about_watermark), onClick = { onOpenAbout() })
+                    HorizontalDivider(color = dividerColor, modifier = Modifier.padding(horizontal = 16.dp))
                     NavRow(Icons.AutoMirrored.Rounded.Help, stringResource(id = R.string.help_support_title), stringResource(id = R.string.help_support_desc), onClick = { onOpenUrl("https://rebelroot.xyz/support") })
                     HorizontalDivider(color = dividerColor, modifier = Modifier.padding(horizontal = 16.dp))
                     NavRow(Icons.Rounded.Feedback, stringResource(id = R.string.send_feedback_title), stringResource(id = R.string.send_feedback_desc), onClick = { showFeedbackDialog = true })
                     HorizontalDivider(color = dividerColor, modifier = Modifier.padding(horizontal = 16.dp))
+                    // GPL-3.0 requires the upstream attribution to remain
+                    // reachable. This points at the fork, which contains the
+                    // upstream licence and NOTICE, rather than a third-party page.
                     NavRow(Icons.Rounded.Code, stringResource(id = R.string.support_github), stringResource(id = R.string.support_github_desc), onClick = { onOpenUrl("https://github.com/REBEL-ROOT/omni-browser") })
                     HorizontalDivider(color = dividerColor, modifier = Modifier.padding(horizontal = 16.dp))
                     NavRow(Icons.Rounded.Public, stringResource(id = R.string.website_omnibrowser), stringResource(id = R.string.website_omnibrowser_desc), onClick = { onOpenUrl("https://www.rebelroot.xyz/omnibrowser") })
                     HorizontalDivider(color = dividerColor, modifier = Modifier.padding(horizontal = 16.dp))
-                    NavRow(Icons.Rounded.Shield, stringResource(id = R.string.privacy_policy_title), stringResource(id = R.string.privacy_policy_desc), onClick = { onOpenUrl("https://www.rebelroot.xyz/omnibrowser/privacy-policy") })
+                    // Opens Samiqura's own policy, shipped inside the app. The
+                    // previous link opened upstream's policy, which does not
+                    // describe this distribution.
+                    NavRow(Icons.Rounded.Shield, stringResource(id = R.string.privacy_policy_title), stringResource(id = R.string.about_privacy_row_desc), onClick = { onOpenPrivacyPolicy() })
                 }
             }
 

@@ -138,8 +138,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.unit.Int
-import androidx.compose.ui.windowInsetsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 
 
 /**

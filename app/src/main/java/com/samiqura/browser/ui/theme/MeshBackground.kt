@@ -69,25 +69,32 @@ private val DarkBlobs = listOf(
     MeshBlob(0.60f, 0.86f, 0.58f, 0xFF1A1A2E.toInt(), 0x001A1A2E),
 )
 
-/** Ink colours for the minimal shell, tuned against each ground. */
+/**
+ * Ink colours for the minimal shell, tuned against each ground.
+ *
+ * Exposed as Compose [androidx.compose.ui.graphics.Color] rather than Int: the
+ * Canvas path in this file works in Int ARGB, but the composables consume these
+ * as tint and background colours, and an Int there is a type error waiting to
+ * happen.
+ */
 object MeshInk {
     /** Primary text and icons on the light mesh. */
-    val onLight = 0xFF1A1620.toInt()
+    val onLight = androidx.compose.ui.graphics.Color(0xFF1A1620)
     /** Secondary text on the light mesh. */
-    val onLightSecondary = 0xFF5C5566.toInt()
+    val onLightSecondary = androidx.compose.ui.graphics.Color(0xFF5C5566)
     /** Primary text and icons on the dark mesh. */
-    val onDark = 0xFFF4F1F8.toInt()
+    val onDark = androidx.compose.ui.graphics.Color(0xFFF4F1F8)
     /** Secondary text on the dark mesh. */
-    val onDarkSecondary = 0xFFA8A0B8.toInt()
+    val onDarkSecondary = androidx.compose.ui.graphics.Color(0xFFA8A0B8)
     /**
-     * The mark's outline. Opaque white rather than a tint, because the mark sits
-     * over every part of the mesh and a translucent edge would disappear against
-     * the pale lower-left region.
+     * The mark's outline and the pill surface. Opaque white rather than a tint,
+     * because these sit over every part of the mesh and a translucent value
+     * would disappear against the pale lower-left region.
      */
-    val markOutline = 0xFFFFFFFF.toInt()
+    val markOutline = androidx.compose.ui.graphics.Color(0xFFFFFFFF)
     /** The sheet surface sits above the mesh, so it needs a real colour. */
-    val sheetLight = 0xFFF3F1F7.toInt()
-    val sheetDark = 0xFF1B1922.toInt()
+    val sheetLight = androidx.compose.ui.graphics.Color(0xFFF3F1F7)
+    val sheetDark = androidx.compose.ui.graphics.Color(0xFF1B1922)
 }
 
 /**

@@ -77,6 +77,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.ui.res.stringResource
 
 /** Sheets need a real surface colour; the mesh cannot show through them. */
 private val SheetShape = RoundedCornerShape(
@@ -171,6 +172,21 @@ fun MeshHomeScreen(
                     )
             )
         }
+
+        // Watermark. Sits under the control row and stays legible over the mesh
+        // without competing with the mark: the mesh's pale lower-left region is
+        // the lightest area, and this text is placed where that gradient has
+        // settled rather than over its brightest point.
+        Text(
+            text = stringResource(R.string.about_watermark),
+            color = ink.copy(alpha = 0.55f),
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(bottom = 84.dp)
+        )
 
         // Three controls, and nothing else. Centre is a raised pill so it reads
         // as the primary action without needing colour.

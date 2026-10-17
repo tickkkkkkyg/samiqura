@@ -58,18 +58,26 @@ jobs:
 
       # Give each APK a name that says which phones it is for. Deciding this at
       # upload time is clearer than making the user inspect the filename.
+      #
+      # Gradle writes to apk/<flavor>/<buildType>/, so aarch64 and arm are
+      # matched on the flavor directory rather than the variant name.
       - name: Rename APKs for the download
+        shell: bash
         run: |
           set -euo pipefail
+          shopt -s nullglob
+          declare -A labels=( [aarch64]=arm64 [arm]=arm32 )
+
           for abi in aarch64 arm; do
-            apk=$(find app/build/outputs/apk -path "*${abi}Slim*" -name '*.apk' | head -1)
-            [ -n "$apk" ] || { echo "no APK found for $abi"; exit 1; }
-            case "$abi" in
-              aarch64) label="arm64" ;;
-              arm)     label="arm32" ;;
-            esac
+            apk=$(ls app/build/outputs/apk/"$abi"/slim/*.apk 2>/dev/null | head -1)
+            if [ -z "$apk" ]; then
+              echo "::error::no APK found for $abi; apk tree is:"
+              find app/build/outputs/apk -name '*.apk' 2>/dev/null || true
+              exit 1
+            fi
+            label="${labels[$abi]}"
             cp "$apk" "Samiqura-${label}-slim.apk"
-            echo "prepared Samiqura-${label}-slim.apk ($(du -h "Samiqura-${label}-slim.apk" | cut -f1))"
+            echo "prepared Samiqura-${label}-slim.apk from $apk ($(du -h "Samiqura-${label}-slim.apk" | cut -f1))"
           done
 
       # The rolling tag is fixed, so each run deletes the previous assets before

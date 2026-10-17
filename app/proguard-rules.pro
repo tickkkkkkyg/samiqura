@@ -217,19 +217,19 @@
 # management library. kmp-process has a JVM PID path that references
 # java.lang.management.* (ManagementFactory, RuntimeMXBean) which do not
 # exist on Android. At runtime the Android-specific PID path is used instead,
-# so these missing classes are harmless. Tell R8 to not error on them.
+# so these missing classes are harmless.
+#
+# The app references only kmp-tor directly; kmp-process arrives as a
+# transitive dependency. The keep rules below are therefore narrower than a
+# blanket `-keep io.matthewnelson.kmp.process.**`. A blanket keep forces R8 to
+# resolve every class in the package, including the JVM-only PID helpers that
+# reference java.lang.management, which fails the build with a missing-class
+# error. kmp-process is reached through reflection, so letting it shrink is
+# safe; the dontwarn rules below cover the JVM-only references.
 -keep class io.matthewnelson.kmp.tor.** { *; }
--keep class io.matthewnelson.kmp.process.** { *; }
--dontwarn java.lang.management.**
--dontwarn io.matthewnelson.kmp.process.**
--dontwarn io.matthewnelson.kmp.tor.**
-
-# ── Android API gaps surfaced by R8 ──────────────────────────────────────────
-# io.matthewnelson.kmp.process probes the JVM process API to read its own PID.
-# It guards these calls at runtime with a version check and never executes them
-# on Android, but R8 still requires the types to exist. Declaring them absent
-# lets R8 keep the reflective lookups without changing behaviour.
 -dontwarn java.lang.management.**
 -dontwarn javax.management.**
 -dontwarn java.lang.ref.Reference
 -dontwarn sun.misc.Unsafe
+-dontwarn io.matthewnelson.kmp.process.**
+-dontwarn io.matthewnelson.kmp.tor.**

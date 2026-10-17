@@ -44,16 +44,20 @@ private data class MeshBlob(
 )
 
 /**
- * Light-mode mesh. Warm rose and amber sit high and to the right, violet carries
- * the middle, and a cool blue anchors the lower left. The warm-to-cool diagonal
- * is what makes the background read as lit rather than merely tinted.
+ * Light-mode mesh. Coral and peach sit high and to the right, lavender carries
+ * the middle, and a periwinkle blue anchors the lower left. The warm-to-cool
+ * diagonal is what makes the background read as lit rather than merely tinted.
+ *
+ * These values were previewed as an image before being committed, by
+ * tools/preview_mesh.py, which reimplements this composition. The first attempt
+ * was visibly washed out and had to be pushed much further than expected.
  */
 private val LightBlobs = listOf(
-    MeshBlob(0.78f, 0.06f, 0.70f, 0xFFFFC9D4.toInt(), 0x00FFC9D4),
-    MeshBlob(0.92f, 0.20f, 0.46f, 0xFFFFD9A8.toInt(), 0x00FFD9A8),
-    MeshBlob(0.42f, 0.42f, 0.72f, 0xFFE0C8F0.toInt(), 0x00E0C8F0),
-    MeshBlob(0.10f, 0.74f, 0.62f, 0xFFCBDDF7.toInt(), 0x00CBDDF7),
-    MeshBlob(0.60f, 0.86f, 0.58f, 0xFFDDE6FA.toInt(), 0x00DDE6FA),
+    MeshBlob(0.86f, 0.07f, 0.52f, 0xFFFF9EA8.toInt(), 0x00FF9EA8), // coral
+    MeshBlob(0.97f, 0.26f, 0.42f, 0xFFFFC186.toInt(), 0x00FFC186), // peach
+    MeshBlob(0.44f, 0.46f, 0.62f, 0xFFD6BCF2.toInt(), 0x00D6BCF2), // lavender
+    MeshBlob(0.07f, 0.70f, 0.58f, 0xFFA8C6F2.toInt(), 0x00A8C6F2), // periwinkle
+    MeshBlob(0.56f, 0.90f, 0.55f, 0xFFC9DDFA.toInt(), 0x00C9DDFA), // pale blue foot
 )
 
 /**

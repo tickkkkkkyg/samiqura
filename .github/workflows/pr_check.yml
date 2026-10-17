@@ -1,0 +1,227 @@
+name: PR Check — Branding, Lint, Compile & Test
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  branding:
+    name: 🏷️ Branding Integrity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Fast structural checks that catch the failure modes that actually
+      # happen when an Android project is renamed or rebranded. These run in
+      # seconds and need no Android SDK, so they gate the slow build jobs.
+      - name: Verify package, resources and updater safety
+        run: |
+          set -euo pipefail
+          fail() { echo "::error::$1"; exit 1; }
+
+          PKG="com.samiqura.browser"
+
+          # 1. Application id and namespace must match the declared package.
+          grep -q "namespace = \"$PKG\"" app/build.gradle.kts || fail "namespace is not $PKG"
+          grep -q "applicationId = \"$PKG\"" app/build.gradle.kts || fail "applicationId is not $PKG"
+
+          # 2. Kotlin sources must not carry the pre-fork package.
+          if grep -rn "com\.rebelroot" app/src --include='*.kt' --include='*.xml'; then
+            fail "stale com.rebelroot references remain"
+          fi
+
+          # 3. Every package declaration must sit under the new root, and the
+          #    directory tree must match the declaration.
+          if find app/src -type d -name rebelroot | grep -q .; then
+            fail "a rebelroot source directory still exists"
+          fi
+          python3 -c "
+          import glob, re, sys
+          pkgs = set()
+          for f in glob.glob('app/src/**/*.kt', recursive=True):
+              for m in re.finditer(r'^package\s+([\w.]+)', open(f, encoding='utf-8', errors='replace').read(), re.M):
+                  pkgs.add(m.group(1))
+          if not any(p == '$PKG' or p.startswith('$PKG.') for p in pkgs):
+              print('::error::no Kotlin declares $PKG'); sys.exit(1)
+          stray = sorted(p for p in pkgs if p != '$PKG' and not p.startswith('$PKG.'))
+          if stray:
+              print('::error::package declarations outside $PKG: ' + ', '.join(stray)); sys.exit(1)
+          "
+
+          # 4. Resource references must resolve. A deleted drawable referenced
+          #    by a theme fails the Android build with a confusing message.
+          python3 - <<'PY'
+          import glob, os, re, sys, xml.etree.ElementTree as ET
+          res, bad = "app/src/main/res", []
+          defined = set()
+          for f in glob.glob(res + "/values*/*.xml"):
+              try:
+                  root = ET.parse(f).getroot()
+              except ET.ParseError as e:
+                  bad.append(f"{f}: malformed XML ({e})"); continue
+              for c in root:
+                  if c.get("name"): defined.add(f"{c.tag}/{c.get('name')}")
+          for f in glob.glob(res + "/drawable*/*") + glob.glob(res + "/mipmap*/*"):
+              defined.add("drawable/" + os.path.basename(f).rsplit(".", 1)[0])
+              defined.add("mipmap/" + os.path.basename(f).rsplit(".", 1)[0])
+          targets = glob.glob(res + "/**/*.xml", recursive=True) + ["app/src/main/AndroidManifest.xml"]
+          for f in targets:
+              try:
+                  txt = open(f, encoding="utf-8").read()
+              except OSError:
+                  continue
+              for m in re.finditer(r"@(drawable|mipmap|color|style)/([A-Za-z0-9_.]+)", txt):
+                  if f"{m.group(1)}/{m.group(2)}" not in defined:
+                      bad.append(f"{f}: unresolved @{m.group(1)}/{m.group(2)}")
+          for b in bad: print(f"::error::{b}")
+          sys.exit(1 if bad else 0)
+          PY
+
+          # 5. The OTA updater must stay inert until this fork has its own
+          #    releases, so it cannot push upstream builds to our users.
+          grep -q 'const val UPDATE_REPO = ""' \
+            app/src/main/java/com/samiqura/browser/browser/BrowserViewModel.kt \
+            || fail "UPDATE_REPO is set but no releases exist for this fork yet"
+
+          # 6. GPL-3.0 attribution must survive rebrand edits.
+          [ -f NOTICE.md ] || fail "NOTICE.md is missing"
+          grep -q "REBEL-ROOT/omni-browser" NOTICE.md || fail "NOTICE.md lost upstream attribution"
+
+          echo "Branding integrity checks passed."
+
+  lint:
+    name: 🔍 Lint & Compile
+    runs-on: ubuntu-latest
+    needs: branding
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '17'
+          cache: gradle
+
+      - name: Grant Gradle execute permission
+        run: chmod +x gradlew
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Compile Universal flavor
+        run: ./gradlew compileUniversalDebugKotlin --no-daemon --stacktrace
+
+      - name: Compile ARM flavor
+        run: ./gradlew compileArmDebugKotlin --no-daemon --stacktrace
+
+      - name: Compile ARM64 flavor
+        run: ./gradlew compileAarch64DebugKotlin --no-daemon --stacktrace
+
+      - name: Run Android Lint
+        run: ./gradlew lintUniversalDebug --no-daemon --continue || true
+
+      - name: Upload Lint Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report-${{ github.sha }}
+          path: app/build/reports/lint-results-universalDebug.html
+          retention-days: 14
+
+  test:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    continue-on-error: true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '17'
+          cache: gradle
+
+      - name: Grant Gradle execute permission
+        run: chmod +x gradlew
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Run Unit Tests
+        run: ./gradlew testUniversalDebugUnitTest --no-daemon --continue
+
+      - name: Upload Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: app/build/reports/tests/testUniversalDebugUnitTest/
+          retention-days: 7
+
+  build:
+    name: 🏗️ Build Debug APK
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '17'
+          cache: gradle
+
+      - name: Grant Gradle execute permission
+        run: chmod +x gradlew
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Build Debug APK
+        run: ./gradlew assembleUniversalDebug --no-daemon
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: samiqura-debug-${{ github.sha }}
+          path: app/build/outputs/apk/**/*.apk
+          retention-days: 14

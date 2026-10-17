@@ -106,6 +106,14 @@ android {
             ndk { debugSymbolLevel = "NONE" }
             matchingFallbacks += listOf("release")
             signingConfig = signingConfigs.getByName("debug")
+            // initWith copies build-type state at the point it runs, which is
+            // before `release` below has attached its ProGuard configuration.
+            // Without this, R8 runs with no rules at all and fails on the
+            // JVM-only classes kmp-process references.
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
         release {
             // Enable R8 code minification & resource shrinking per Google Play Console recommendation.

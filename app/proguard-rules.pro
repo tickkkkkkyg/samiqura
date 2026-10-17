@@ -223,3 +223,13 @@
 -dontwarn java.lang.management.**
 -dontwarn io.matthewnelson.kmp.process.**
 -dontwarn io.matthewnelson.kmp.tor.**
+
+# ── Android API gaps surfaced by R8 ──────────────────────────────────────────
+# io.matthewnelson.kmp.process probes the JVM process API to read its own PID.
+# It guards these calls at runtime with a version check and never executes them
+# on Android, but R8 still requires the types to exist. Declaring them absent
+# lets R8 keep the reflective lookups without changing behaviour.
+-dontwarn java.lang.management.**
+-dontwarn javax.management.**
+-dontwarn java.lang.ref.Reference
+-dontwarn sun.misc.Unsafe

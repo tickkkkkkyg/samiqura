@@ -91,6 +91,22 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
         }
+        // Slim: R8-minified and resource-shrunk, but signed with the standard
+        // debug key so it installs on a device without a private keystore.
+        // The bulk of a Samiqura build is the GeckoView native engine, which a
+        // debug build ships unstripped; running R8 and the resource shrinker is
+        // what actually reduces the download, and costs nothing in features.
+        // Use `slim` for local installs and CI size checks; use `release` for
+        // anything published, since only that is signed by the project key.
+        create("slim") {
+            initWith(getByName("release"))
+            isMinifyEnabled = true
+            isShrinkResources = true
+            // Symbols belong in a separate artefact, not inside the APK.
+            ndk { debugSymbolLevel = "NONE" }
+            matchingFallbacks += listOf("release")
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
             // Enable R8 code minification & resource shrinking per Google Play Console recommendation.
             // Critical keep rules in proguard-rules.pro safeguard GeckoView, Compose, SnakeYAML & SQLCipher.

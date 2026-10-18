@@ -74,6 +74,22 @@ private val DarkBlobs = listOf(
 )
 
 /**
+ * The mesh as two brush stops, for screens that need a gradient rather than a
+ * rasterised bitmap.
+ *
+ * A live, scrolling screen should not re-rasterise on every frame, so the home
+ * screen paints these instead of calling [createMeshBackground]. The values are
+ * the base wash from the same composition the blob renderer uses, which keeps
+ * the two paths visually consistent rather than merely similar.
+ */
+object MeshBrush {
+    val lightTop = androidx.compose.ui.graphics.Color(0xFFF6F2F8)
+    val lightBottom = androidx.compose.ui.graphics.Color(0xFFEFF3FB)
+    val darkTop = androidx.compose.ui.graphics.Color(0xFF14121A)
+    val darkBottom = androidx.compose.ui.graphics.Color(0xFF0D0C12)
+}
+
+/**
  * Ink colours for the minimal shell, tuned against each ground.
  *
  * Exposed as Compose [androidx.compose.ui.graphics.Color] rather than Int: the

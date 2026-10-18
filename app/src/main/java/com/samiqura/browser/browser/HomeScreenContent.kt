@@ -122,6 +122,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import com.samiqura.browser.ui.theme.MeshBrush
 
 
 @Composable
@@ -227,6 +228,11 @@ fun HomeScreenContent(
         }
     }
     var showHomeMenu by remember { mutableStateOf(false) }
+    // Mesh stops for the home background, chosen by theme so the gradient and
+    // the ink on top of it stay in the same mode.
+    val isMeshDark = viewModel.isDarkThemeEnabled || viewModel.isAmoledMode
+    val meshTop = if (isMeshDark) MeshBrush.darkTop else MeshBrush.lightTop
+    val meshBottom = if (isMeshDark) MeshBrush.darkBottom else MeshBrush.lightBottom
     var showAddShortcutSheet by remember { mutableStateOf(false) }
     var shortcutsExpanded by remember { mutableStateOf(false) }
     var selectedShortcutForMenu by remember { mutableStateOf<HomeShortcut?>(null) }
@@ -381,9 +387,11 @@ fun HomeScreenContent(
                             colors = listOf(Color.Transparent, Color.Transparent)
                         )
                     } else {
-                        Brush.verticalGradient(
-                            colors = listOf(MaterialTheme.colorScheme.background, MaterialTheme.colorScheme.background)
-                        )
+                        // No wallpaper set: the Samiqura mesh, as a brush rather
+                        // than the cached bitmap the empty home screen used. This
+                        // screen scrolls, so re-rasterising on every frame would
+                        // be wasteful; a brush is composited by the GPU instead.
+                        Brush.verticalGradient(listOf(meshTop, meshBottom))
                     }
                 )
                 .onGloballyPositioned { homeViewportPx = it.size.height },
@@ -2307,6 +2315,21 @@ fun HomeScreenContent(
 
                 Spacer(Modifier.height(16.dp))
             }
+
+            // Puskr Cooperation credit, as the last item in the scroll so it
+            // sits below the tiles rather than competing with them. It scrolls
+            // with the content instead of floating, which is what stops it
+            // colliding with the bottom navigation bar.
+            Spacer(Modifier.height(20.dp))
+            Text(
+                text = stringResource(R.string.about_watermark),
+                fontSize = 11.sp,
+                color = if (isMeshDark) Color(0xFF6B6480) else Color(0xFF9A93A8),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            )
         }
     }
 }
@@ -2332,7 +2355,7 @@ private fun HomeSearchField(
         value = searchText,
         onValueChange = onSearchTextChange,
         modifier = modifier.onFocusChanged { onFocusChanged(it.isFocused) },
-        placeholder = { Text(stringResource(id = R.string.search_placeholder), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp) },
+        placeholder = { Text(stringResource(id = R.string.search_placeholder), color = if (viewModel.isDarkThemeEnabled) Color(0xFFA8A0B8) else Color(0xFF5C5566), fontSize = 14.sp) },
         leadingIcon = {
             var expanded by remember { mutableStateOf(false) }
             val currentEngine = viewModel.selectedSearchEngine
@@ -2460,12 +2483,16 @@ private fun HomeSearchField(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(end = 4.dp)
             ) {
+                // Ink matched to the field surface rather than the theme, so the
+                // controls stay legible now that the field is opaque white or
+                // near-black instead of a themed grey.
+                val fieldInk = if (viewModel.isDarkThemeEnabled) Color(0xFFA8A0B8) else Color(0xFF5C5566)
                 if (searchText.text.isNotEmpty()) {
                     IconButton(onClick = onClear) {
                         Icon(
                             imageVector = Icons.Rounded.Close,
                             contentDescription = "Clear search",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = fieldInk
                         )
                     }
                 }
@@ -2473,29 +2500,36 @@ private fun HomeSearchField(
                     Icon(
                         imageVector = Icons.Rounded.CameraAlt,
                         contentDescription = "Google Lens",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = fieldInk
                     )
                 }
                 IconButton(onClick = onVoice) {
                     Icon(
                         imageVector = Icons.Rounded.Mic,
                         contentDescription = "Voice Search",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = fieldInk
                     )
                 }
             }
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
         keyboardActions = KeyboardActions(onGo = { onSubmit() }),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(999.dp),
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = if (viewModel.isDarkThemeEnabled) Color.White else Color(0xFF1C1C1E),
-            unfocusedTextColor = if (viewModel.isDarkThemeEnabled) Color.White else Color(0xFF1C1C1E),
+            // Ink is chosen against the mesh rather than against the Material
+            // scheme, because the mesh is now the ground the field sits on. The
+            // previous greys were tuned for a flat theme surface and vanished
+            // into the gradient.
+            focusedTextColor = if (viewModel.isDarkThemeEnabled) Color(0xFFF4F1F8) else Color(0xFF1A1620),
+            unfocusedTextColor = if (viewModel.isDarkThemeEnabled) Color(0xFFF4F1F8) else Color(0xFF1A1620),
+            cursorColor = if (viewModel.isDarkThemeEnabled) Color(0xFFF4F1F8) else Color(0xFF1A1620),
             focusedBorderColor = Color.Transparent,
             unfocusedBorderColor = Color.Transparent,
-            focusedContainerColor = if (viewModel.isDarkThemeEnabled) Color(0xFF1C1C1E) else Color(0xFFF1F3F4),
-            unfocusedContainerColor = if (viewModel.isDarkThemeEnabled) Color(0xFF1C1C1E) else Color(0xFFF1F3F4)
+            // Opaque, not a tint. The field must read as a solid surface sitting
+            // on the gradient rather than glass that disappears into it.
+            focusedContainerColor = if (viewModel.isDarkThemeEnabled) Color(0xFF1B1922) else Color(0xFFFFFFFF),
+            unfocusedContainerColor = if (viewModel.isDarkThemeEnabled) Color(0xFF1B1922) else Color(0xFFFFFFFF)
         )
     )
 }

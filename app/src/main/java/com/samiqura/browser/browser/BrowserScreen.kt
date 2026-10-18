@@ -138,7 +138,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.foundation.layout.windowInsetsPadding
 
 
 /**
@@ -2713,73 +2712,6 @@ fun BrowserScreen(
                                     bottomPadding = configBottomPad
                                 )
                             } else if (isHome) {
-                                // Minimal shell: an empty gradient room with the
-                                // mark centred and three controls. Search lives in
-                                // a sheet rather than on the screen so nothing
-                                // competes with the mark.
-                                var meshSearchOpen by remember { mutableStateOf(false) }
-                                var meshQuery by remember { mutableStateOf("") }
-
-                                LaunchedEffect(meshQuery) {
-                                    if (meshQuery.isBlank()) {
-                                        viewModel.searchSuggestions.clear()
-                                    } else {
-                                        viewModel.fetchSearchSuggestions(meshQuery)
-                                    }
-                                }
-
-                                MeshHomeScreen(
-                                    isDark = viewModel.isDarkThemeEnabled || viewModel.isAmoledMode,
-                                    onOpenSearch = { meshSearchOpen = true },
-                                    // Casting needs a device picker. Until that
-                                    // exists this opens search rather than
-                                    // silently doing nothing.
-                                    onOpenCast = { meshSearchOpen = true },
-                                    onOpenSettings = onOpenSettings,
-                                )
-
-                                if (meshSearchOpen) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .background(
-                                                Color.Black.copy(alpha = 0.18f)
-                                            )
-                                            .clickable(
-                                                interactionSource = remember {
-                                                    androidx.compose.foundation.interaction.MutableInteractionSource()
-                                                },
-                                                indication = null,
-                                                onClick = { meshSearchOpen = false }
-                                            )
-                                    )
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .windowInsetsPadding(
-                                                androidx.compose.foundation.layout.WindowInsets.systemBars
-                                            ),
-                                        contentAlignment = Alignment.BottomCenter
-                                    ) {
-                                        MeshSearchSheet(
-                                            query = meshQuery,
-                                            onQueryChange = { meshQuery = it },
-                                            suggestions = viewModel.searchSuggestions.toList(),
-                                            onSubmit = { q ->
-                                                meshSearchOpen = false
-                                                meshQuery = ""
-                                                viewModel.loadUrl(q)
-                                            },
-                                            isDark = viewModel.isDarkThemeEnabled || viewModel.isAmoledMode,
-                                            onDismiss = { meshSearchOpen = false },
-                                            modifier = Modifier
-                                                .widthIn(
-                                                    max = if (isTablet) 720.dp else Int.MAX_VALUE.dp
-                                                ),
-                                        )
-                                    }
-                                }
-                            } else if (false) {
                                 HomeScreenContent(
                                     viewModel = viewModel,
                                     onOpenDownloads = onOpenDownloads,

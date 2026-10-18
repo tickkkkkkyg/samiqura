@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samiqura.browser.R
 import com.samiqura.browser.browser.BrowserViewModel
+import com.samiqura.browser.ui.theme.AccentSwatches
 
 private data class ThemeAppIconPreset(val key: String, val label: String, val resId: Int, val colors: Pair<Color, Color>)
 
@@ -180,14 +181,9 @@ fun ThemeScreen(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold
                         )
-                        val accentOptions = listOf(
-                            "Ocean Blue" to Color(0xFF0A84FF),
-                            "Crimson Red" to Color(0xFFFF3B5C),
-                            "Emerald Green" to Color(0xFF00C853),
-                            "Sunset Orange" to Color(0xFFFF6D00),
-                            "Royal Purple" to Color(0xFF7C4DFF),
-                            "Monochrome" to Color(0xFFAAAAAA)
-                        )
+                        // Single source of truth, shared with the home and
+                        // quick-settings pickers so the options cannot drift.
+                        val accentOptions = AccentSwatches
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(10.dp),
                             verticalAlignment = Alignment.CenterVertically

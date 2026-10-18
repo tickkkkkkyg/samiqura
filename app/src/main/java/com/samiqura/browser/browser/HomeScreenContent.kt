@@ -122,6 +122,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import com.samiqura.browser.ui.theme.AccentSwatches
 import com.samiqura.browser.ui.theme.MeshBrush
 
 
@@ -1920,14 +1921,9 @@ fun HomeScreenContent(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    val themes = listOf(
-                        "Ocean Blue" to Color(0xFF0A84FF),
-                        "Crimson Red" to Color(0xFFFF3B5C),
-                        "Emerald Green" to Color(0xFF00C853),
-                        "Sunset Orange" to Color(0xFFFF6D00),
-                        "Royal Purple" to Color(0xFF7C4DFF),
-                        "Monochrome" to Color(0xFFAAAAAA)
-                    )
+                    // Shared with the theme screen so the two pickers cannot
+                    // offer different accents.
+                    val themes = AccentSwatches
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween

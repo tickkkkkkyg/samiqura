@@ -52,20 +52,20 @@ data class AccentPalette(
 )
 
 // Premium tailored accents based on Google Material standards
-val OceanBlueDark = AccentPalette(Color(0xFFA8C7FA), Color(0xFF7CAAFC), Color(0xFF6991D6), DarkError)
-val OceanBlueLight = AccentPalette(Color(0xFF0B57D0), Color(0xFF0842A0), Color(0xFF001D35), LightError)
+val OceanBlueDark = AccentPalette(Color(0xFF7BAFFF), Color(0xFF4C8DFF), Color(0xFF2A6BDA), DarkError)
+val OceanBlueLight = AccentPalette(Color(0xFF1A73E8), Color(0xFF0D5AC4), Color(0xFF084294), LightError)
 
-val CrimsonRedDark = AccentPalette(Color(0xFFF2B8B5), Color(0xFFE46962), Color(0xFF8C1D18), DarkError)
-val CrimsonRedLight = AccentPalette(Color(0xFFB3261E), Color(0xFF8C1D18), Color(0xFF410E0B), LightError)
+val CrimsonRedDark = AccentPalette(Color(0xFFFF6B6B), Color(0xFFFF5252), Color(0xFFE53935), DarkError)
+val CrimsonRedLight = AccentPalette(Color(0xFFD32F2F), Color(0xFFB71C1C), Color(0xFF7F1010), LightError)
 
-val EmeraldGreenDark = AccentPalette(Color(0xFF81C995), Color(0xFF5BB974), Color(0xFF1E8E3E), DarkError)
-val EmeraldGreenLight = AccentPalette(Color(0xFF1E8E3E), Color(0xFF137333), Color(0xFF0D5022), LightError)
+val EmeraldGreenDark = AccentPalette(Color(0xFF4CAF93), Color(0xFF26A69A), Color(0xFF00897B), DarkError)
+val EmeraldGreenLight = AccentPalette(Color(0xFF00897B), Color(0xFF00695C), Color(0xFF004D40), LightError)
 
-val SunsetOrangeDark = AccentPalette(Color(0xFFFDD663), Color(0xFFF9AB00), Color(0xFFE37400), DarkError)
-val SunsetOrangeLight = AccentPalette(Color(0xFFE37400), Color(0xFFB06000), Color(0xFF824B00), LightError)
+val SunsetOrangeDark = AccentPalette(Color(0xFFFF7A45), Color(0xFFFF8A5B), Color(0xFFFB542B), DarkError)
+val SunsetOrangeLight = AccentPalette(Color(0xFFFB542B), Color(0xFFE64A19), Color(0xFFBF360C), LightError)
 
-val RoyalPurpleDark = AccentPalette(Color(0xFFD0BCFF), Color(0xFFB69DF8), Color(0xFF4F378B), DarkError)
-val RoyalPurpleLight = AccentPalette(Color(0xFF6750A4), Color(0xFF4F378B), Color(0xFF21005D), LightError)
+val RoyalPurpleDark = AccentPalette(Color(0xFFB388FF), Color(0xFF9C6AFF), Color(0xFF7C4DFF), DarkError)
+val RoyalPurpleLight = AccentPalette(Color(0xFF7C4DFF), Color(0xFF651FFF), Color(0xFF4527A0), LightError)
 
 val MonochromeDark = AccentPalette(Color(0xFFC7C7C7), Color(0xFFAAAAAA), Color(0xFF303030), DarkError)
 val MonochromeLight = AccentPalette(Color(0xFF5E5E5E), Color(0xFF474747), Color(0xFF1F1F1F), LightError)
@@ -96,8 +96,23 @@ val AccentThemesLight = mapOf(
     "Monochrome" to MonochromeLight
 )
 
-// Default accent on first launch.
+// Default accent on first launch. The key stays "Arc" so that preferences
+// saved by earlier builds keep resolving to the same scheme; the colours it
+// maps to are the Brave-flavoured tokens in ArcTokens.kt.
 const val DEFAULT_ACCENT = "Arc"
+
+// Accent choices shown in the theme pickers, in display order. The default
+// leads. Keys must exist in [AccentThemesDark]/[AccentThemesLight], or be
+// [DEFAULT_ACCENT] (which routes to the token-built scheme instead).
+val AccentSwatches = listOf(
+    DEFAULT_ACCENT to ArcAccent,          // Brave orange (default)
+    "Ocean Blue" to Color(0xFF1A73E8),
+    "Crimson Red" to Color(0xFFD32F2F),
+    "Emerald Green" to Color(0xFF00897B),
+    "Sunset Orange" to Color(0xFFE64A19),
+    "Royal Purple" to Color(0xFF7C4DFF),
+    "Monochrome" to Color(0xFF5E5E5E)
+)
 
 fun buildDarkScheme(accent: AccentPalette): ColorScheme = darkColorScheme(
     background = DarkBg,

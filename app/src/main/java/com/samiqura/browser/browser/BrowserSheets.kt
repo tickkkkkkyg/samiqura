@@ -127,6 +127,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import com.samiqura.browser.ui.theme.AccentSwatches
 
 
 @Composable
@@ -4764,7 +4765,7 @@ fun AllInOneMenuSheet(
                                         .background(dividerColor, RoundedCornerShape(8.dp))
                                         .padding(horizontal = 6.dp, vertical = 6.dp)
                                 ) {
-                                    Box(modifier = Modifier.size(7.dp).background(Color(0xFF8B5CF6), CircleShape))
+                                    Box(modifier = Modifier.size(7.dp).background(MaterialTheme.colorScheme.primary, CircleShape))
                                 }
                                 Spacer(modifier = Modifier.width(6.dp))
                             }
@@ -5336,14 +5337,9 @@ fun ThemeSheet(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold
                         )
-                        val accentOptions = listOf(
-                            "Ocean Blue" to Color(0xFF0A84FF),
-                            "Crimson Red" to Color(0xFFFF3B5C),
-                            "Emerald Green" to Color(0xFF00C853),
-                            "Sunset Orange" to Color(0xFFFF6D00),
-                            "Royal Purple" to Color(0xFF7C4DFF),
-                            "Monochrome" to Color(0xFFAAAAAA)
-                        )
+                        // Shared with the theme screen so the two pickers
+                        // cannot offer different accents.
+                        val accentOptions = AccentSwatches
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,

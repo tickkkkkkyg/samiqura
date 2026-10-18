@@ -336,7 +336,7 @@ fun PhoneAddressBar(
                         Box(
                             modifier = Modifier
                                 .size(8.dp)
-                                .background(Color(0xFF8B5CF6), androidx.compose.foundation.shape.CircleShape)
+                                .background(MaterialTheme.colorScheme.primary, androidx.compose.foundation.shape.CircleShape)
                                 .align(Alignment.TopEnd)
                                 .offset(x = 2.dp, y = (-2).dp)
                         )
@@ -822,7 +822,7 @@ if (viewModel.chromeNavBarEnabled) {
                         Box(
                             modifier = Modifier
                                 .size(8.dp)
-                                .background(Color(0xFF8B5CF6), androidx.compose.foundation.shape.CircleShape)
+                                .background(MaterialTheme.colorScheme.primary, androidx.compose.foundation.shape.CircleShape)
                                 .align(Alignment.TopEnd)
                                 .offset(x = 2.dp, y = (-2).dp)
                         )

@@ -1,16 +1,17 @@
 /*
- * Samiqura - Arc-inspired design tokens.
+ * Samiqura - design tokens for the Brave-flavoured visual system.
  *
  * Copyright (C) 2026 Samiqura contributors
  * Derived from Omni Browser (C) 2026 RebelRoot Ltd, GPL-3.0.
  *
- * This file is the single source of truth for the Arc-inspired visual system.
+ * This file is the single source of truth for the app's visual system.
  * Components consume these tokens and must not hard-code hex values, so the
  * whole app re-themes from one place.
  *
- * Design intent: tabs are treated as *places* rather than a scrolling strip.
- * Colour is therefore quiet — a near-black ground with one saturated accent —
- * so the one thing that signals state (which Space you are in) stays legible.
+ * Design intent: a warm, card-based look in the spirit of Brave — an off-white
+ * or warm near-black ground, white cards with hairline borders, and one
+ * saturated orange accent that marks state and primary actions. The "Arc"
+ * names are historical; the values are what matter.
  */
 
 package com.samiqura.browser.ui.theme
@@ -19,20 +20,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 // ── Dark ground ──────────────────────────────────────────────────────────────
-// Deeper than a standard Material dark surface so the frosted panels read as
-// genuinely translucent rather than merely grey.
+// Brave's dark mode is a warm near-black, not purple. Panels float on it
+// with a subtle hairline so cards read as separate surfaces rather than one
+// flat sheet.
 
-val ArcNightGround = Color(0xFF0B0B0F)
-val ArcNightPanel = Color(0xFF16161C)
-val ArcNightPanelActive = Color(0xFF22222B)
-val ArcNightHairline = Color(0xFF2E2E3A)
+val ArcNightGround = Color(0xFF1A1D21)
+val ArcNightPanel = Color(0xFF24282E)
+val ArcNightPanelActive = Color(0xFF2E3338)
+val ArcNightHairline = Color(0xFF3A4047)
 
 // ── Day ground ───────────────────────────────────────────────────────────────
+// Brave light is warm — an off-white / cream ground that makes white cards
+// pop without harsh contrast. The hairline is a warm grey, not blue.
 
-val ArcDayGround = Color(0xFFF4F4F6)
+val ArcDayGround = Color(0xFFF6F3EE)
 val ArcDayPanel = Color(0xFFFFFFFF)
-val ArcDayPanelActive = Color(0xFFE9E9EE)
-val ArcDayHairline = Color(0xFFDCDCE3)
+val ArcDayPanelActive = Color(0xFFEFECE7)
+val ArcDayHairline = Color(0xFFE6E0D6)
 
 // ── Ink ──────────────────────────────────────────────────────────────────────
 
@@ -42,13 +46,13 @@ val ArcInkDay = Color(0xFF14141A)
 val ArcInkDaySec = Color(0xFF5C5C6B)
 
 // ── Accent ───────────────────────────────────────────────────────────────────
-// The single saturated colour in the system. Used for the active Space, focus
-// rings and primary action only — never as decoration. Chosen to sit clearly
-// apart from the neutral ground without the "acid green" look that generic
-// dark themes default to.
+// Brave lion orange — the whole browser is themed around this single
+// saturated accent so active state, focus rings and primary actions read
+// instantly. Light scheme uses the quieter burnt-orange so it doesn't
+// vibrate on white.
 
-val ArcAccent = Color(0xFF7C6BF5)
-val ArcAccentQuiet = Color(0xFF4B3FB0)
+val ArcAccent = Color(0xFFFB542B)
+val ArcAccentQuiet = Color(0xFFBE3C1A)
 val ArcAccentInk = Color(0xFFFFFFFF)
 
 // ── Space colours ────────────────────────────────────────────────────────────
@@ -57,25 +61,25 @@ val ArcAccentInk = Color(0xFFFFFFFF)
 // maximum saturation.
 
 val ArcSpaceColors = listOf(
-    Color(0xFF7C6BF5), // violet
-    Color(0xFF38BDF8), // sky
-    Color(0xFF34D399), // emerald
+    Color(0xFFFB542B), // brave orange
+    Color(0xFF4C54D2), // brave blurple
+    Color(0xFF2AC6A0), // brave teal
     Color(0xFFFBBF24), // amber
-    Color(0xFFFB7185), // rose
-    Color(0xFFA78BFA), // lilac
-    Color(0xFF2DD4BF), // teal
-    Color(0xFFF97316), // ember
+    Color(0xFFFF4B6E), // brave pink
+    Color(0xFF9B6AF5), // violet (kept for variety)
+    Color(0xFF20B6E0), // sky
+    Color(0xFFFF8A2B), // warm ember
 )
 
 // ── Shape ────────────────────────────────────────────────────────────────────
-// Arc reads as soft and pill-like. These are the only radii in the system.
+// Brave is compact and card-y: modest radii, pill search bars, soft sheets.
 
 object ArcRadius {
     val chip = 12.dp
-    val panel = 22.dp
-    val card = 28.dp
+    val panel = 16.dp
+    val card = 20.dp
     val pill = 999.dp
-    val sheet = 32.dp
+    val sheet = 24.dp
     val dot = 6.dp
 }
 

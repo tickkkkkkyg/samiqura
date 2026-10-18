@@ -8720,7 +8720,7 @@ fun BrowserScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         onClick = { tryUnlockIncognito() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C4DFF), contentColor = Color.White),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
                         shape = RoundedCornerShape(24.dp),
                         modifier = Modifier.height(48.dp).padding(horizontal = 16.dp)
                     ) {

@@ -41,6 +41,20 @@ fun arcDarkScheme(): ColorScheme = darkColorScheme(
     outlineVariant = ArcNightHairline,
     error = Color_ErrorDark,
     onError = Color_OnErrorDark,
+    errorContainer = Color(0xFF93000A),
+    onErrorContainer = Color(0xFFFFDAD6),
+    // Filled roles that Material 3 components (segmented buttons, navigation
+    // indicators, chips) read instead of primary. Without these they fall back
+    // to the baseline lavender palette, which is the last purple left in a
+    // Brave-orange app.
+    secondaryContainer = Color(0xFF73301E),
+    onSecondaryContainer = Color(0xFFFFDCCF),
+    tertiaryContainer = Color(0xFF2A2F73),
+    onTertiaryContainer = Color(0xFFDDE0FF),
+    inverseSurface = Color(0xFFF2F2F5),
+    inverseOnSurface = Color(0xFF1A1D21),
+    inversePrimary = ArcAccentQuiet,
+    surfaceTint = ArcAccent,
     scrim = Color_Scrim,
 )
 
@@ -68,6 +82,16 @@ fun arcLightScheme(): ColorScheme = lightColorScheme(
     outlineVariant = ArcDayHairline,
     error = Color_ErrorLight,
     onError = Color_OnErrorLight,
+    errorContainer = Color(0xFFFFDAD6),
+    onErrorContainer = Color(0xFF410002),
+    secondaryContainer = Color(0xFFFFDCCF),
+    onSecondaryContainer = Color(0xFF3B1205),
+    tertiaryContainer = Color(0xFFDDE0FF),
+    onTertiaryContainer = Color(0xFF12184A),
+    inverseSurface = Color(0xFF1A1D21),
+    inverseOnSurface = Color(0xFFF6F3EE),
+    inversePrimary = ArcAccent,
+    surfaceTint = ArcAccent,
     scrim = Color_Scrim,
 )
 

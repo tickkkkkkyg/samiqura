@@ -174,7 +174,7 @@ class OmniApplication : Application(), coil.ImageLoaderFactory {
 
         // Apply hardcoded defaults immediately so the first Compose frame has a
         // valid theme — no main-thread stall, no white flash.
-        ThemeStateHolder.darkThemeEnabled = true
+        ThemeStateHolder.darkThemeEnabled = false
         ThemeStateHolder.amoledMode = false
         ThemeStateHolder.accentTheme = DEFAULT_ACCENT
         ThemeStateHolder.dynamicColorEnabled = false
@@ -211,7 +211,7 @@ class OmniApplication : Application(), coil.ImageLoaderFactory {
         appScope.launch {
             try {
                 val prefs = readStartupPrefs()
-                ThemeStateHolder.darkThemeEnabled  = prefs[DARK_THEME_ENABLED_KEY] ?: true
+                ThemeStateHolder.darkThemeEnabled  = prefs[DARK_THEME_ENABLED_KEY] ?: false
                 ThemeStateHolder.amoledMode        = prefs[AMOLED_MODE_KEY]        ?: false
                 ThemeStateHolder.accentTheme       = prefs[ACCENT_THEME_KEY]       ?: DEFAULT_ACCENT
                 ThemeStateHolder.dynamicColorEnabled = prefs[DYNAMIC_COLOR_KEY]    ?: false

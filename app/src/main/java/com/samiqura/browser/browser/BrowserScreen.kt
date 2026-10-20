@@ -1621,10 +1621,10 @@ fun BrowserScreen(
                 val adaptiveNavHeight = if (adaptive.atLeastMedium) adaptiveMetrics.navigationBarHeight else (52 * viewModel.bottomNavScale).dp
                 val adaptiveNavTouch = if (adaptive.atLeastMedium) adaptiveMetrics.navigationBarTouchTarget else config.barIconSize + 4.dp
                 val adaptiveHomeNavTouch = if (adaptive.atLeastMedium) adaptiveMetrics.navigationBarTouchTarget else 44.dp
-                val navBg = if (showHomeScreen) Color.Transparent else if (viewModel.isAmoledMode) Color(0xFF000000) else if (isDark) Color(0xFF1C1C1E) else Color(0xFFFFFFFF)
-                val navBorder = if (viewModel.isAmoledMode) Color(0xFF1A1A1A) else if (isDark) Color(0xFF2C2C2E) else Color(0xFFE5E5EA)
-                val navContent = if (isDark) Color.White else Color(0xFF1C1C1E)
-                val navContentMuted = if (isDark) Color.White.copy(alpha = 0.2f) else Color(0xFF8E8E93)
+                val navBg = if (showHomeScreen) Color.Transparent else if (viewModel.isAmoledMode) Color(0xFF000000) else MaterialTheme.colorScheme.surface
+                val navBorder = if (viewModel.isAmoledMode) Color(0xFF1A1A1A) else MaterialTheme.colorScheme.outline
+                val navContent = MaterialTheme.colorScheme.onSurface
+                val navContentMuted = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f)
 
                 Surface(
                     modifier = Modifier

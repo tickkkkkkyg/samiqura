@@ -495,8 +495,8 @@ fun SettingsScreen(
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text(title, color = textPrimaryColor, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                             if (badge != null) {
-                                Surface(color = Color(0xFFFF9500).copy(alpha = 0.15f), shape = RoundedCornerShape(6.dp)) {
-                                    Text(badge, color = Color(0xFFFF9500), fontSize = 9.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+                                Surface(color = accentColor.copy(alpha = 0.15f), shape = RoundedCornerShape(6.dp)) {
+                                    Text(badge, color = accentColor, fontSize = 9.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
                                 }
                             }
                         }

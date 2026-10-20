@@ -118,6 +118,9 @@ class BrowserViewModel : ViewModel() {
     companion object {
         internal const val TAG = "BrowserViewModel"
 
+        /** Set once the two default site tiles have been seeded into the home grid. */
+        internal const val KEY_DEFAULT_SITES_SEEDED = "default_sites_seeded_v1"
+
         /** Default maximum number of background tabs with live GeckoSessions. */
         internal const val DEFAULT_MAX_LIVE_TABS = 24
 
@@ -707,7 +710,7 @@ class BrowserViewModel : ViewModel() {
     var customSearchEngines by mutableStateOf<List<CustomSearchEngine>>(emptyList())
     val searchSuggestions = androidx.compose.runtime.mutableStateListOf<String>()
     val historySuggestions = androidx.compose.runtime.mutableStateListOf<HistoryEntry>()
-    var isDarkThemeEnabled by mutableStateOf(true)
+    var isDarkThemeEnabled by mutableStateOf(false)
     var followSystemTheme by mutableStateOf(false)
     var confirmExit by mutableStateOf(true)
     var defaultExitAction by mutableStateOf("ASK")
@@ -4470,7 +4473,7 @@ class BrowserViewModel : ViewModel() {
 
     fun getDarkThemePreference(context: Context): Flow<Boolean> {
         return context.dataStore.data.map { preferences ->
-            preferences[DARK_THEME_ENABLED_KEY] ?: true
+            preferences[DARK_THEME_ENABLED_KEY] ?: false
         }
     }
 
@@ -7937,7 +7940,7 @@ class BrowserViewModel : ViewModel() {
     /**
      * Pre-loaded website shortcuts (social sites and torrent sites) that the app
      * used to install automatically. They are stripped on load so an existing
-     * install keeps only the permanent RebelRoot tile and the built-in feature
+     * install keeps only the Samiqura default sites and the built-in feature
      * tiles below.
      */
     private val legacyDefaultShortcutIds = setOf(
@@ -7954,28 +7957,37 @@ class BrowserViewModel : ViewModel() {
         HomeShortcut("incognito", "Incognito", "incognito", isFeature = true)
     )
 
+    /**
+     * The two sites every new install should start with. They are seeded once
+     * and then behave like any other shortcut: the user can rename, reorder or
+     * delete them. The seed marker keeps a deletion from being undone on the
+     * next launch.
+     */
+    private val defaultSiteShortcuts = listOf(
+        HomeShortcut("xyle", "xyle.host", "https://xyle.host"),
+        HomeShortcut("puskr", "puskr.site", "https://puskr.site")
+    )
+
     fun loadShortcuts(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
+            val seedPrefs = context.getSharedPreferences("omni_prefs", Context.MODE_PRIVATE)
             val file = File(context.filesDir, "browser_shortcuts.json")
             if (!file.exists()) {
-                // RebelRoot plus the built-in feature tiles; everything else is user-added.
-                val defaultList = mutableListOf(
-                    HomeShortcut("rebelroot", "RebelRoot", "https://www.rebelroot.xyz/omnibrowser", isPermanent = true)
-                )
+                // Two brand sites plus the built-in feature tiles; everything else is user-added.
+                val defaultList = mutableListOf<HomeShortcut>()
+                defaultList.addAll(defaultSiteShortcuts)
                 defaultList.addAll(builtInFeatureShortcuts)
                 withContext(Dispatchers.Main) {
                     shortcutsList.clear()
                     shortcutsList.addAll(defaultList)
                 }
+                seedPrefs.edit().putBoolean(KEY_DEFAULT_SITES_SEEDED, true).apply()
                 saveShortcuts(context)
                 return@launch
             }
             try {
                 val jsonArray = JSONArray(file.readText())
                 val temp = mutableListOf<HomeShortcut>()
-                
-                // Always ensure the permanent RebelRoot shortcut is at the beginning
-                temp.add(HomeShortcut("rebelroot", "RebelRoot", "https://www.rebelroot.xyz/omnibrowser", isPermanent = true))
 
                 var shortcutsChanged = false
                 for (i in 0 until jsonArray.length()) {
@@ -8024,6 +8036,23 @@ class BrowserViewModel : ViewModel() {
                         temp.add(feature)
                         shortcutsChanged = true
                     }
+                }
+
+                // Seed the two Samiqura sites once for installs that predate
+                // them. The marker is written even when the tiles already exist,
+                // so deleting one later is not undone on the next launch.
+                if (!seedPrefs.getBoolean(KEY_DEFAULT_SITES_SEEDED, false)) {
+                    val missingSites = defaultSiteShortcuts.filter { site ->
+                        temp.none {
+                            it.url.equals(site.url, ignoreCase = true) ||
+                                it.title.equals(site.title, ignoreCase = true)
+                        }
+                    }
+                    if (missingSites.isNotEmpty()) {
+                        temp.addAll(0, missingSites)
+                    }
+                    seedPrefs.edit().putBoolean(KEY_DEFAULT_SITES_SEEDED, true).apply()
+                    shortcutsChanged = true
                 }
 
                 val cleanTemp = temp.filter { !it.url.isBlank() && it.url != "about:blank" && !it.url.contains("about:blank") }
@@ -10711,7 +10740,7 @@ class BrowserViewModel : ViewModel() {
         // Appearance / theme: these are loaded once at startup into fields and
         // ThemeStateHolder, so a restore must refresh them or recreate() keeps
         // showing the pre-import theme.
-        val darkThemePref = prefs[DARK_THEME_ENABLED_KEY] ?: true
+        val darkThemePref = prefs[DARK_THEME_ENABLED_KEY] ?: false
         isDarkThemeEnabled = darkThemePref
         ThemeStateHolder.darkThemeEnabled = darkThemePref
         followSystemTheme = prefs[FOLLOW_SYSTEM_THEME_KEY] ?: false

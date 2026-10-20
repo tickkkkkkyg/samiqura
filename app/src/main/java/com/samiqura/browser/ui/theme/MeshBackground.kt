@@ -83,10 +83,10 @@ private val DarkBlobs = listOf(
  * the two paths visually consistent rather than merely similar.
  */
 object MeshBrush {
-    val lightTop = androidx.compose.ui.graphics.Color(0xFFF6F2F8)
-    val lightBottom = androidx.compose.ui.graphics.Color(0xFFEFF3FB)
-    val darkTop = androidx.compose.ui.graphics.Color(0xFF14121A)
-    val darkBottom = androidx.compose.ui.graphics.Color(0xFF0D0C12)
+    val lightTop = androidx.compose.ui.graphics.Color(0xFFFFFFFF)
+    val lightBottom = androidx.compose.ui.graphics.Color(0xFFF7F3EC)
+    val darkTop = androidx.compose.ui.graphics.Color(0xFF17191D)
+    val darkBottom = androidx.compose.ui.graphics.Color(0xFF101215)
 }
 
 /**
